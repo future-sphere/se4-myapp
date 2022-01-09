@@ -5,7 +5,7 @@ const {
   findUsersByGender,
   findUsersInDepartment,
   paginate,
-} = require('../controllers/users');
+} = require('../controllers/users-old');
 
 router.get('/user/:id', function (req, res, next) {
   const { id } = req.params;

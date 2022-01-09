@@ -1,6 +1,7 @@
 const mongoose = require('mongoose');
 
-const connectionString = '';
+const connectionString =
+  'mongodb+srv://admin:password321@cluster0.enyip.mongodb.net/peter?authSource=admin&replicaSet=atlas-njn9hn-shard-0&readPreference=primary&appname=MongoDB%20Compass&ssl=true';
 
 let isConnected;
 

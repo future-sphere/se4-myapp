@@ -1,7 +1,47 @@
 const UserModel = require('../schema/users');
 
+const getUserById = async (req, res) => {
+  const response = await UserModel.findById(req.query.id);
+
+  res.json(response);
+};
+
 const getUsers = async (req, res) => {
   const response = await UserModel.find();
+
+  res.json(response);
+};
+
+const getUserByName = async (req, res) => {
+  // find a user by name: GET /users/name?name=Tim => {name: 'Tim', ...}
+
+  const { name } = req.query;
+
+  const regex = new RegExp(name, 'i');
+
+  const response = await UserModel.find({
+    name: regex,
+  });
+
+  res.json(response);
+};
+
+const getUserByAge = async (req, res) => {
+  const { age, minAge, maxAge } = req.query;
+
+  let response = null;
+  if (age) {
+    response = await UserModel.find({
+      age,
+    });
+  } else if (minAge && maxAge) {
+    response = await UserModel.find({
+      age: {
+        $gte: minAge,
+        $lte: maxAge,
+      },
+    });
+  }
 
   res.json(response);
 };
@@ -9,12 +49,22 @@ const getUsers = async (req, res) => {
 const createUser = async (req, res) => {
   const { name, age } = req.body;
 
-  const response = await UserModel.create({
-    name,
-    age,
-  });
+  try {
+    if (!name) {
+      throw 'Name is missing!';
+    }
+    if (!age) {
+      throw 'Age is missing!';
+    }
+    const response = await UserModel.create({
+      name,
+      age,
+    });
 
-  res.json(response);
+    res.json(response);
+  } catch (error) {
+    return res.json(error);
+  }
 };
 
 const updateUser = async (req, res) => {
@@ -55,7 +105,11 @@ const removeUser = async (req, res) => {
     }
     const response = await UserModel.findByIdAndRemove(userId);
 
-    return res.json(response);
+    if (response) {
+      return res.json(response);
+    } else {
+      throw `User with id ${userId} does not exist!`;
+    }
   } catch (error) {
     return res.json(error);
   }
@@ -66,4 +120,7 @@ module.exports = {
   createUser,
   updateUser,
   removeUser,
+  getUserByName,
+  getUserByAge,
+  getUserById,
 };
